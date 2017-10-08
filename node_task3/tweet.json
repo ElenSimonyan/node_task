@@ -1,0 +1,14 @@
+{
+	"tweets": [
+		{
+			"tweet": "I like dragons",
+			"user": "johnsnow",
+			"id": "1507456537718"
+		},
+		{
+			"tweet": "I am the dragon mother",
+			"user": "whitehairlady",
+			"id": "1507456537718"
+		}
+	]
+}
