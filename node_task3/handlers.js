@@ -1,9 +1,48 @@
-
 const fs = require ('fs');
 
 const Handlers = {};
 module.exports = Handlers;
 
+Handlers.checkEndpoints = (request,response) => {
+    Handlers.readBody(request, (body) =>{
+        const { method, url} = request;
+        if (url.startsWith('/api/tweets')) {
+            if (method === 'POST') {
+                Handlers.apiAddTweets(body);
+                response.writeHead(200, {'Content-Type': 'application/json'});
+                response.write('tweets were appended');
+                response.end();
+            }
+            else if (method === 'GET') {
+                response.writeHead(200, {'Content-Type': 'application/json'});
+                Handlers.apiGetTweets(response, request);
+            }
+
+            else if (method === 'PUT') {
+                apiUpdateTweets(request, body);
+                response.writeHead(200, {'Content-Type': 'application/json'});
+                response.write(Handlers.apiShowsMessage('Successfully created tweet'));
+                response.end();
+            }
+            else if (method === 'DELETE') {
+                response.writeHead(200, {'Content-Type': 'application/json'});
+                Handlers.apiDeleteTweet(response, request);
+            }
+            else {
+                response.write('Method not found');
+                response.end();
+            }
+        }
+        else  {
+            response.writeHead(404, {'Content-Type': 'text/plain'});
+            response.write('wrong url');
+            response.end();
+        }
+
+        response.writeHead(200, {'Content-Type': 'text/plain'});
+    });
+}
+//database DATABASE obj
 Handlers.write = (path, data) => {
     return new Promise((resolve, reject)=>{
         fs.writeFile(path, JSON.stringify(data, null, '\t'), (err) => {
@@ -11,7 +50,7 @@ Handlers.write = (path, data) => {
         });
     })
 };
-
+//database DATABASE obj
 Handlers.read = (path) => {
     return new Promise((resolve, reject) => {
         fs.readFile(path, 'utf8', (err, data) => {
@@ -19,13 +58,14 @@ Handlers.read = (path) => {
             return resolve(data);
         });
     })
-
 };
+//utils UTILS obj
 Handlers.apiShowsMessage = mes => {
     let obj = {};
     obj.message = mes;
     return JSON.stringify(obj, null, '\t');
 };
+//utils UTILS obj
 Handlers.readBody = (request, cb) => {
     let body = [];
     request.on('error', (err) => {
@@ -92,7 +132,8 @@ Handlers.apiDeleteTweet = (response, request) => {
     })
     .catch((err) => console.log(err));
 };
-Handlers.apiUpdateTweets = (req, body) => {
+const apiUpdateTweets = (req, body) => {
+    //database return UpdateTweets() func
     Handlers.read('tweets.json')
     .then((data) => {
         let urlId = req.url.split('/')[3];
