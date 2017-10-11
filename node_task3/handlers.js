@@ -1,27 +1,9 @@
-const fs = require ('fs');
 const Utils = require('./utils')
 const Database = require('./database')
 
 const Handlers = {};
 module.exports = Handlers;
 
-const apiAddTweets = (body) => {
-    Database.addTweets(body)
-    //.catch((err) => console.log(err));
-};
-const apiGetTweets = (response, request) => {
-    Database.getTweets(response, request)
-    //.catch((err) => console.log(err));
-};
-const apiDeleteTweet = (response, request) => {
-    Database.deleteTweet(request);
-        //mna stex
-    //.catch((err) => console.log(err));--?
-};
-const apiUpdateTweets = (req, body) => {
-     Database.updateTweets(req,body)
-    //.catch((err) => console.log(err));
-};
 Handlers.checkEndpoints = (request,response) => {
     Utils.readBody(request, (body) =>{
         let urlId = request.url.split('/')[3];
@@ -29,27 +11,38 @@ Handlers.checkEndpoints = (request,response) => {
         const { method, url} = request;
         if (url.startsWith('/api/tweets')) {
             if (method === 'POST') {
-                apiAddTweets(body);
-                Utils.responsePost(response)
+                return Database.addTweets(body)
+                .then(() => {
+                    Utils.responsePost(response)
+                })
+                .catch ((err) =>  {
+                    Utils.badRequestResponse(response,err)
+                })
             }
             else if (method === 'GET') {
-                response.writeHead(200, {'Content-Type': 'application/json'});
-                apiGetTweets(response, request);
+                return Database.getTweetById(response, request)
+                .catch ((err) =>  {
+                    Utils.badRequestResponse(response,err)
+                })
             }
 
             else if (method === 'PUT') {
-                // Utils responsePut func
-                apiUpdateTweets(request, body);
-                Utils.responsePut(response);
+                return Database.updateTweets(request, body)
+                .then((message) => {
+                    Utils.responsePut(response, message);
+                })
+                .catch ((err) =>  {
+                    Utils.badRequestResponse(response,err)
+                })
             }
             else if (method === 'DELETE') {
-                apiDeleteTweet(response, request); //return
-                Utils.responseDelete(response,urlId);
-                // .catch ((err) =>  {
-                //     response.writeHead(400, {'Content-Type': 'text/plain'})
-                //     response.statusMessage = err;
-                //     response.write(err);
-                //})}
+                return Database.deleteTweet(request)
+                .then((message) => {
+                    Utils.responseDelete(response, urlId, message);
+                })
+                .catch ((err) =>  {
+                    Utils.badRequestResponse(response,err)
+                })
             }
             else {
                 Utils.responseMethodNotFound(response);

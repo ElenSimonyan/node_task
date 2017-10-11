@@ -31,20 +31,32 @@ Utils.responsePost = (response) => {
     response.end();
 };
 
-Utils.responseDelete = (response, urlId) => {
+Utils.responseDelete = (response, urlId, message) => {
+    console.log('delete');
     response.writeHead(200, {'Content-Type': 'application/json'});
-    response.write(Utils.apiShowsMessage(`Successfully deleted tweet ${urlId}`));
+    response.write(Utils.apiShowsMessage(`Successfully deleted tweet ${urlId} ,${message}`));
+    response.end()
+};
+Utils.responseGet = (response, a) => {
+    response.writeHead(200, {'Content-Type': 'application/json'});
+    response.write(JSON.stringify(a, null, '\t'));
     response.end()
 };
 
 Utils.responseMethodNotFound = (response) => {
-    response.writeHead(404, {'Content-Type': 'text/plain'});
+    response.writeHead(404, {'Content-Type': 'application/json'});
     response.write('Method not found');
     response.end();
 };
 
 Utils.responseNotFound = (response) => {
-    response.writeHead(404, {'Content-Type': 'text/plain'});
+    response.writeHead(404, {'Content-Type': 'application/json'});
     response.write('not found response');
     response.end();
-}
+};
+
+Utils.badRequestResponse = (response,err) => {
+    response.writeHead(400, {'Content-Type': 'application/json'});
+    response.statusMessage = err;
+    response.write(err);
+};
