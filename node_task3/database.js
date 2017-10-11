@@ -41,6 +41,25 @@ Database.addTweets = (body) => {
     })
 };
 
+Database.getTweets = (response,request) => {
+    Database.read('tweets.json')
+        .then((data) => {
+            let urlId = request.url.split('/')[3];
+            let parsedData = JSON.parse(data);
+            if (urlId) {
+                parsedData.tweets.map((item) => {
+                    if (urlId === item.id) {
+                        return response.write(JSON.stringify(item, null, '\t'));
+                    }
+                });
+            }
+            else {
+                response.write(data);
+            }
+            response.end();
+        })
+}
+
 Database.deleteTweet = (request) => {
     Database.read('tweets.json')
     .then((data) => {

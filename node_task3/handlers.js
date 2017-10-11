@@ -10,23 +10,8 @@ const apiAddTweets = (body) => {
     //.catch((err) => console.log(err));
 };
 const apiGetTweets = (response, request) => {
-    Database.read('tweets.json')
-    .then((data) => {
-        let urlId = request.url.split('/')[3];
-        let parsedData = JSON.parse(data);
-        if (urlId) {
-            parsedData.tweets.map((item) => {
-                if (urlId === item.id) {
-                    return response.write(JSON.stringify(item, null, '\t'));
-                }
-            });
-        }
-        else {
-            response.write(data);
-        }
-        response.end();
-    })
-    .catch((err) => console.log(err));
+    Database.getTweets(response, request)
+    //.catch((err) => console.log(err));
 };
 const apiDeleteTweet = (response, request) => {
     Database.deleteTweet(request);
