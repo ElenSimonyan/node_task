@@ -6,24 +6,8 @@ const Handlers = {};
 module.exports = Handlers;
 
 const apiAddTweets = (body) => {
-    let parsedBody = JSON.parse(body);
-    parsedBody.forEach((item) => {
-        item.id = Math.floor(Math.random() * 10000).toString();
-    });
-    Database.read('tweets.json')
-    .then((data) => {
-        if(!data.toString()){
-            let obj = {};
-            obj.tweets = parsedBody;
-            Database.write('tweets.json', obj)
-        }
-        else {
-            let parsedData = JSON.parse(data.toString());
-            parsedData.tweets = parsedData.tweets.concat(parsedBody);
-            Database.write('tweets.json', parsedData)
-        }
-    })
-    .catch((err) => console.log(err));
+    Database.addTweets(body)
+    //.catch((err) => console.log(err));
 };
 const apiGetTweets = (response, request) => {
     Database.read('tweets.json')
@@ -74,8 +58,7 @@ Handlers.checkEndpoints = (request,response) => {
                 Utils.responsePut(response);
             }
             else if (method === 'DELETE') {
-                response.writeHead(200, {'Content-Type': 'application/json'});
-                 apiDeleteTweet(response, request); //return
+                apiDeleteTweet(response, request); //return
                 Utils.responseDelete(response,urlId);
                 // .catch ((err) =>  {
                 //     response.writeHead(400, {'Content-Type': 'text/plain'})

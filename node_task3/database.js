@@ -21,6 +21,26 @@ Database.read = (path) => {
     })
 };
 
+Database.addTweets = (body) => {
+    let parsedBody = JSON.parse(body);
+    parsedBody.forEach((item) => {
+        item.id = Math.floor(Math.random() * 10000).toString();
+    });
+    Database.read('tweets.json')
+    .then((data) => {
+        if(!data.toString()){
+            let obj = {};
+            obj.tweets = parsedBody;
+            Database.write('tweets.json', obj)
+        }
+        else {
+            let parsedData = JSON.parse(data.toString());
+            parsedData.tweets = parsedData.tweets.concat(parsedBody);
+            Database.write('tweets.json', parsedData)
+        }
+    })
+};
+
 Database.deleteTweet = (request) => {
     Database.read('tweets.json')
     .then((data) => {
