@@ -56,44 +56,43 @@ Handlers.checkEndpoints = (request,response) => {
         }
         else if (url === '/' && method === 'GET'){
             return Database.read('tweets.json')
-                .then((data) => {
-                    fs.readFile(AllTweetsTemplate, 'utf-8', function(err, source){
-                        if (err) throw err;
-                        var template = Handlebars.compile(source);
-                        var html = template({tweets: data.tweets});
-                        response.end(html)
-                    })
+            .then((data) => {
+                fs.readFile(AllTweetsTemplate, 'utf-8', function(err, source){
+                    if (err) throw err;
+                    var template = Handlebars.compile(source);
+                    var html = template({tweets: data.tweets});
+                    response.end(html)
                 })
+            })
         }
         else if(method === 'GET'){
             let urlId = request.url.split('/')[1];
             return Database.read('tweets.json')
-                .then((data) => {
-                    fs.readFile(AllTweetsTemplate, 'utf-8', function (err, source) {
-                        if (err) throw err;
-                        data.tweets.map((item) => {
-                            if (urlId === item.id) {
-                                var template = Handlebars.compile(source);
-                                var html = template({tweets: item});
-                                response.end(html)
-                            }
-                        });
+            .then((data) => {
+                fs.readFile(AllTweetsTemplate, 'utf-8', function (err, source) {
+                    if (err) throw err;
+                    data.tweets.map((item) => {
+                        if (urlId === item.id) {
+                            var template = Handlebars.compile(source);
+                            var html = template({tweets: [item]});
+                            response.end(html)
+                        }
+                    });
 
-                    })
                 })
+            })
         }
         else if (url.split('?')[0] === '/create') {
-            return Utils.readBody(request)
-                .then((body) => {
-                    return Utils.processBody(body)
-                        .then((obj) => {
-                            return Database.addTweets(obj)
-                        })
-                        .then(() => {
-                            console.log('im here');
-                            return Utils.redirectHomeResponse()
-                        })
-                })
+        return Utils.readBody(request)
+        .then((body) => {
+            return Utils.processBody(body)
+            .then((obj) => {
+                return Database.addTweets(obj)
+            })
+            .then(() => {
+                return Utils.redirectHomeResponse(response)
+            })
+        })
         }
         return Utils.badRequestResponse(response);
 };

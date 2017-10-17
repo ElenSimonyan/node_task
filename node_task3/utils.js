@@ -78,16 +78,9 @@ Utils.findTweetById = (id, tweets) => {
     return tweets.find(tweet => tweet.id === id)
 };
 
-Utils.redirectHomeResponse = () => {
-    console.log('bebe');
-    return Promise.resolve(Object.assign({}, {
-        header: {
-            code: 302,
-            type: 'text/html',
-            message: 'Redirect',
-            redirect: '/'
-        }
-    }))
+Utils.redirectHomeResponse = (res) => {
+    res.writeHead(301,{Location: 'http://localhost:8000/'});
+    res.end();
 };
 
 Utils.processBody = (body) => {

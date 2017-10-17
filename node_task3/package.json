@@ -15,5 +15,8 @@
   "dependencies": {
     "handlebars": "^4.0.10",
     "nodemon": "^1.12.1"
+  },
+  "devDependencies": {
+    "handlebars-helper-css": "^0.1.0"
   }
 }

@@ -14,7 +14,12 @@
 </div>
 <div id="container">
     {{#each tweets}}
-    <p>{{this.user}}: {{this.tweet}}</p>
+    <ul class="tweet">
+        <li>
+            <p>username: {{this.user}}</p>
+            <p> tweet: {{this.tweet}}</p>
+        </li>
+    </ul>
     {{/each}}
 </div>
 </body>
