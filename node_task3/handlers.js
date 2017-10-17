@@ -1,56 +1,99 @@
-const Utils = require('./utils')
+const Utils = require('./utils');
+const Handlebars = require('handlebars');
+
 const Database = require('./database')
+const fs = require ('fs');
+const AllTweetsTemplate = './public/tweets.html'
+
 
 const Handlers = {};
 module.exports = Handlers;
 
 Handlers.checkEndpoints = (request,response) => {
-    Utils.readBody(request, (body) =>{
         let urlId = request.url.split('/')[3];
-
         const { method, url} = request;
         if (url.startsWith('/api/tweets')) {
             if (method === 'POST') {
-                return Database.addTweets(body)
+                return Utils.readBody(request)
+                .then((body) => Database.addTweets(body))
                 .then(() => {
-                    Utils.responsePost(response)
-                })
-                .catch ((err) =>  {
-                    Utils.badRequestResponse(response,err)
+                    return Utils.responsePost(response)
                 })
             }
             else if (method === 'GET') {
-                return Database.getTweetById(response, request)
-                .catch ((err) =>  {
-                    Utils.badRequestResponse(response,err)
-                })
+                if (urlId) {
+                    return Database.read('tweets.json')
+                    .then((data) => {
+                        return Database.getTweetById(urlId,data.tweets)
+                    })
+                    .then((obj) => {
+                        return Utils.responseGet(response, obj)
+                    })
+                }
+                else {
+                    return Database.read('tweets.json')
+                    .then((obj) => {
+                        return Utils.responseGet(response, obj)
+                    })
+                }
             }
-
             else if (method === 'PUT') {
-                return Database.updateTweets(request, body)
-                .then((message) => {
-                    Utils.responsePut(response, message);
+                return Utils.readBody(request)
+                .then((body) => {
+                    return Database.updateTweets(urlId, body)
+
                 })
-                .catch ((err) =>  {
-                    Utils.badRequestResponse(response,err)
+                .then((message) => {
+                    return Utils.responsePut(response, message);
                 })
             }
             else if (method === 'DELETE') {
-                return Database.deleteTweet(request)
+                return Database.deleteTweet(urlId)
                 .then((message) => {
-                    Utils.responseDelete(response, urlId, message);
-                })
-                .catch ((err) =>  {
-                    Utils.badRequestResponse(response,err)
+                    return Utils.responseDelete(response, urlId, message);
                 })
             }
-            else {
-                Utils.responseMethodNotFound(response);
-            }
         }
-        else  {
-            Utils.responseNotFound(response);
+        else if (url === '/' && method === 'GET'){
+            return Database.read('tweets.json')
+                .then((data) => {
+                    fs.readFile(AllTweetsTemplate, 'utf-8', function(err, source){
+                        if (err) throw err;
+                        var template = Handlebars.compile(source);
+                        var html = template({tweets: data.tweets});
+                        response.end(html)
+                    })
+                })
         }
-        response.writeHead(200, {'Content-Type': 'text/plain'});
-    })
-}
+        else if(method === 'GET'){
+            let urlId = request.url.split('/')[1];
+            return Database.read('tweets.json')
+                .then((data) => {
+                    fs.readFile(AllTweetsTemplate, 'utf-8', function (err, source) {
+                        if (err) throw err;
+                        data.tweets.map((item) => {
+                            if (urlId === item.id) {
+                                var template = Handlebars.compile(source);
+                                var html = template({tweets: item});
+                                response.end(html)
+                            }
+                        });
+
+                    })
+                })
+        }
+        else if (url.split('?')[0] === '/create') {
+            return Utils.readBody(request)
+                .then((body) => {
+                    return Utils.processBody(body)
+                        .then((obj) => {
+                            return Database.addTweets(obj)
+                        })
+                        .then(() => {
+                            console.log('im here');
+                            return Utils.redirectHomeResponse()
+                        })
+                })
+        }
+        return Utils.badRequestResponse(response);
+};

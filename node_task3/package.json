@@ -13,6 +13,7 @@
   "author": "let addingStuff = arr[0] + arr[1] + arr[2]",
   "license": "ISC",
   "dependencies": {
+    "handlebars": "^4.0.10",
     "nodemon": "^1.12.1"
   }
 }

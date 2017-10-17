@@ -1,6 +1,4 @@
 const fs = require ('fs');
-const Utils = require('./utils')
-
 
 const Database = {};
 module.exports= Database;
@@ -18,11 +16,12 @@ Database.write = (path, data) => {
         });
     })
 };
+
 Database.read = (path) => {
     return new Promise((resolve, reject) => {
         fs.readFile(path, 'utf8', (err, data) => {
             if (err) return reject(err);
-            return resolve(data);
+            return resolve(JSON.parse(data));
         });
     })
 };
@@ -32,70 +31,47 @@ Database.addTweets = (body) => {
     parsedBody.forEach((item) => {
         item.id = Math.floor(Math.random() * 10000).toString();
     });
-    Database.read('tweets.json')
+    return Database.read('tweets.json')
     .then((data) => {
         if(!data.toString()){
+            console.log('1111');
             let obj = {};
             obj.tweets = parsedBody;
-            Database.write('tweets.json', obj)
+            return Database.write('tweets.json', obj)
         }
         else {
-            let parsedData = JSON.parse(data.toString());
-            parsedData.tweets = parsedData.tweets.concat(parsedBody);
-            Database.write('tweets.json', parsedData)
+            data.tweets = data.tweets.concat(parsedBody);
+            return Database.write('tweets.json', data)
         }
     })
 };
 
-Database.getTweetById = (response,request) => {
-    return Database.read('tweets.json')
-    .then((data) => {
-        let urlId = request.url.split('/')[3];
-        let parsedData = JSON.parse(data);
-        let a = {};
-        if (urlId) {
-            parsedData.tweets.map((item) => {
-                if (urlId === item.id) {
-                    a = item;
-                }
-            });
-        }
-        else {
-            a = parsedData;
-        }
-        Utils.responseGet(response, a)
-    })
-    .catch((err) => console.log(err));
+Database.getTweetById = (id, tweets) => {
+    return tweets.find(tweet => tweet.id === id)
 };
 
-Database.deleteTweet = (request) => {
+Database.deleteTweet = (urlId) => {
    return Database.read('tweets.json')
    .then((data) => {
-    let urlId = request.url.split('/')[3];
-    let parsedData = JSON.parse(data);
-    parsedData.tweets.forEach((item) => {
+       data.tweets.map((item,i) => {
         if (urlId === item.id) {
-            parsedData.tweets.splice(item, 1);
+            data.tweets.splice(i, 1);
         }
     });
-       return Database.write('tweets.json', parsedData)
+       return Database.write('tweets.json', data)
     })
-    .catch((err) => console.log(err));
 };
 
-Database.updateTweets = (req,body) => {
+Database.updateTweets = (urlId,body) => {
     return Database.read('tweets.json')
     .then((data) => {
-        let urlId = req.url.split('/')[3];
-        let parsedData = JSON.parse(data);
         let parsedBody = JSON.parse(body);
-        console.log(parsedData);
-        parsedData.tweets.map((item) => {
+        data.tweets.map((item) => {
             if (urlId === item.id) {
                 Object.assign(item, parsedBody);
-               return Database.write('tweets.json', parsedData)
+               return Database.write('tweets.json', data)
             }
         })
     })
-    .catch((err) => console.log(err));
 };
+
