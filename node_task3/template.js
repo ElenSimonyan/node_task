@@ -1,5 +1,3 @@
-
-
 const Handlebars = require('handlebars');
 const fs = require('fs');
 const AllTweetsTemplate = './public/tweets.html';

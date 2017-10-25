@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/javascript">
+    main = () => {
+        const mainDiv = document.createElement('div');
+        const addButton = document.createElement('button');
+        mainDiv.appendChild(addButton);
+        addButton.innerHTML = 'create';
+        addButton.name = 'create';
+        addButton.addEventListener('click',() => addTree());
+        const removeButton = document.createElement('button');
+        mainDiv.appendChild(removeButton);
+        removeButton.innerHTML = 'remove';
+        removeButton.name = 'remove';
+        removeButton.addEventListener('click',() => removeTree())
+        const closeButton = document.createElement('button');
+        closeButton.name = 'close';
+        closeButton.innerHTML = 'close';
+        closeButton.addEventListener('click',() => closeTree());
+
+        mainDiv.appendChild(closeButton);
+        return mainDiv;
+    };
+    newLi = (name) => {
+        const id = Math.floor(Math.random() * 100000);
+        const li = document.createElement('li');
+        li.id = id;
+        li.name = name;
+        li.innerHTML = `${name} id ${li.id}`;
+        li.style.padding = '10px';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.addEventListener('change', (evn) => disable(evn));
+        li.appendChild(input);
+        li.draggable = true;
+        li.setAttribute('ondragstart', 'drag(event)');
+        li.setAttribute('ondrop', 'drop(event)');
+        li.setAttribute('ondragover', 'allowDrop(event)')
+        return li;
+    };
+
+    newUl = (name) => {
+        const id = Math.floor(Math.random() * 100000);
+        let ul = document.createElement('ul');
+        ul.name = name;
+        ul.id = id;
+        ul.style.padding = '10px 15px';
+        ul.draggable = true;
+        ul.setAttribute('ondragstart', 'drag(event)');
+        ul.setAttribute('ondrop', 'drop(event)');
+        ul.setAttribute('ondragover', 'allowDrop(event)');
+        return ul;
+    };
+    disable = (ev) => {
+        const checked = document.querySelectorAll('input:checked');
+        const create = document.querySelector('button[name = "create"]');
+        const close = document.querySelector('button[name = "close"]');
+        const remove = document.querySelector('button[name = "remove"]');
+        const parent = event.target.parentNode;
+        console.log(parent);
+        if(checked.length === 0) {
+            close.disabled = true;
+            remove.disabled = true;
+            create.disabled = true;
+        }
+        if (parent.name === 'tree 0' && checked ) {
+            console.log(parent.name);
+            console.log(parent.lastChild === checked);
+            console.log('heree');
+            const remove = document.querySelector('button[name = "remove"]');
+            console.log(remove);
+            remove.disabled = true;
+            console.log(remove);
+
+        }
+        else {
+            close.disabled = false;
+            remove.disabled = false;
+            create.disabled = false;
+        }
+    };
+
+    const container = document.getElementById('root');
+    container.appendChild(main());
+
+    const allowDrop = (ev) => {
+        ev.preventDefault();
+    };
+
+    const drag = (ev) => {
+        ev.dataTransfer.setData("text", ev.target.id)
+    };
+
+    const drop = (ev) => {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        ev.target.appendChild(document.getElementById(data));
+    };
+    numbers = (name) => {
+       const newName = name.slice(0, name.length - 1);
+        let a = name.charAt(name.length-1);
+        a = Number(a);
+        name = `${newName}${a+1}`;
+        return name;
+    };
+
+    addTree = () => {
+        const checked = document.querySelectorAll('input:checked');
+        const parent = event.target.parentNode;
+        let ul = parent.nextSibling;
+
+        if (!ul) {
+            let ulParent = newUl('tree');
+            ulParent.appendChild(newLi('tree 0'));
+            parent.parentNode.appendChild(ulParent);
+        }
+        else if (checked.length > 0) {
+            for (let i of checked) {
+                if (!i.nextSibling) {
+                    let newUl1 = newUl(i.parentNode.name);
+                    newUl1.appendChild(newLi(`${i.parentNode.name}0`));
+                    i.parentNode.appendChild(newUl1);
+                }
+                else {
+                    let nextSub = i.nextSibling;
+                    const name = nextSub.lastChild.name;
+                    nextSub.appendChild(newLi(numbers(name)));
+                }
+            }
+        }
+    }
+    removeTree = () => {
+        const checked = document.querySelectorAll('input:checked');
+        for(let i of checked) {
+            i.parentNode.remove();
+        }
+    };
+
+    closeTree = () => {
+        const checked = document.querySelectorAll('input:checked');
+        const close = document.querySelector('button[name = "close"]');
+        if(close.innerHTML =='close'){
+            for (let i of checked){
+                let ul = i.nextSibling;
+                if (i.nextSibling) {
+                    i.nextSibling.style.visibility = 'hidden';
+                    ul.style.display = 'none';
+                    close.innerHTML = 'open';
+                }
+                else {
+                    close.disabled = true;
+                }
+            }
+        }
+        else {
+            close.innerHTML = 'close';
+            for (let i of checked) {
+                let ul = i.nextSibling;
+                if (i.nextSibling) {
+                    i.nextSibling.style.visibility = 'visible';
+                    ul.style.display = 'block';
+                }
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

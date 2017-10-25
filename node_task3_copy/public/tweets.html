@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div>
+    <form action="/create" method="POST">
+        <input type="text" name="username" placeholder="Username">
+        <input type="text" name="tweet" placeholder="Tweet">
+        <input type="submit" name="create" value="Create">
+    </form>
+</div>
+<div id="container">
+    {{#each tweets}}
+    <p>{{this.user}}: {{this.tweet}}</p>
+    {{/each}}
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<style>
+    #container {
+        display: block;
+    }
+    #container ul {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .update input{
+        display: block;
+        padding: 4px;
+        margin-bottom: 4px;
+    }
+    .update {
+        display: inline-block;
+        vertical-align: middle;
+        padding-top: 24px;
+    }
+</style>
+<div>
+    <h2>Add new tweet</h2>
+    <form action="/create" method="POST">
+        <input type="text" name="username" placeholder="Username">
+        <input type="text" name="tweet" placeholder="Tweet">
+        <input type="submit" name="create" value="Create">
+    </form>
+</div>
+<div id="container">
+    {{#each tweets}}
+    <ul class="tweet">
+        <li>
+            <p>username: {{this.user}}</p>
+            <p> tweet: {{this.tweet}}</p>
+            <a href="http://localhost:8000/{{this.id}}">more about this tweet</a>
+        </li>
+    </ul>
+
+    <form action="/update/{{this.id}}" method="POST" class="update">
+        <input type="text" name="username" placeholder="Username">
+        <input type="text" name="tweet" placeholder="Tweet">
+        <input type="submit" name="update" value="Update">
+    </form>
+    <form action="/delete/{{this.id}}" method="GET">
+        <input type="submit" name="delete" value="Delete">
+    </form>
+    {{/each}}
+</div>
+</body>
+</html>

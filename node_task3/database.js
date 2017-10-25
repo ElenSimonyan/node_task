@@ -32,18 +32,18 @@ Database.addTweets = (body) => {
         item.id = Math.floor(Math.random() * 10000).toString();
     });
     return Database.read('tweets.json')
-    .then((data) => {
-        if(!data.toString()){
-            console.log('1111');
-            let obj = {};
-            obj.tweets = parsedBody;
-            return Database.write('tweets.json', obj)
-        }
-        else {
-            data.tweets = data.tweets.concat(parsedBody);
-            return Database.write('tweets.json', data)
-        }
-    })
+        .then((data) => {
+            if(!data.toString()){
+                console.log('1111');
+                let obj = {};
+                obj.tweets = parsedBody;
+                return Database.write('tweets.json', obj)
+            }
+            else {
+                data.tweets = data.tweets.concat(parsedBody);
+                return Database.write('tweets.json', data)
+            }
+        })
 };
 
 Database.getTweetById = (id, tweets) => {
@@ -51,28 +51,27 @@ Database.getTweetById = (id, tweets) => {
 };
 
 Database.deleteTweet = (urlId) => {
-   return Database.read('tweets.json')
-   .then((data) => {
-       data.tweets.map((item,i) => {
-        if (urlId === item.id) {
-            data.tweets.splice(i, 1);
-        }
-    });
-       return Database.write('tweets.json', data)
-    })
+    return Database.read('tweets.json')
+        .then((data) => {
+            data.tweets.map((item,i) => {
+                if (urlId === item.id) {
+                    data.tweets.splice(i, 1);
+                }
+            });
+            return Database.write('tweets.json', data)
+        })
 };
 
 Database.updateTweets = (urlId,body) => {
     console.log('update',body);
     return Database.read('tweets.json')
-    .then((data) => {
-        let parsedBody = JSON.parse(body);
-        data.tweets.map((item) => {
-            if (urlId === item.id) {
-                Object.assign(item, parsedBody);
-               return Database.write('tweets.json', data)
-            }
+        .then((data) => {
+            let parsedBody = JSON.parse(body);
+            data.tweets.map((item) => {
+                if (urlId === item.id) {
+                    Object.assign(item, parsedBody);
+                    return Database.write('tweets.json', data)
+                }
+            })
         })
-    })
 };
-
