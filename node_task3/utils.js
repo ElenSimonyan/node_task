@@ -27,14 +27,12 @@ Utils.responsePut = (response) => {
     response.writeHead(200, {'Content-Type': 'application/json'});
     response.write(Utils.apiShowsMessage('Successfully created tweet'));
     response.end();
-    return Promise.resolve();
 };
 
 Utils.responsePost = (response) => {
     response.writeHead(200, {'Content-Type': 'application/json'});
     response.write(Utils.apiShowsMessage('tweets were appended'));
     response.end();
-    return Promise.resolve();
 };
 
 Utils.responseDelete = (response, urlId, message) => {
@@ -72,22 +70,36 @@ Utils.resNotFound = (response,err) => {
 Utils.responseGetforWeb = (response, buildHTML) => {
     response.writeHead(200, {'Content-Type': 'text/html'});
     response.end(buildHTML);
-}
+};
 
 Utils.findTweetById = (id, tweets) => {
     return tweets.find(tweet => tweet.id === id)
 };
 
 Utils.redirectHomeResponse = (res) => {
-    res.writeHead(301,{Location: 'http://localhost:8000/'});
+    res.writeHead(302,{Location: 'http://localhost:8000/'});
     res.end();
 };
-
-Utils.processBody = (body) => {
+Utils.splitForUpdate = (body) => {
     const query = body.split('=');
     const user = query[1].split('&')[0];
     const tweet = query[2].split('&')[0];
-    const obj = [{user: user, tweet: tweet}];
-    console.log(obj);
+    const string = tweet.split('+').join(' ');
+    const obj = {user: user, tweet: string};
     return Promise.resolve(JSON.stringify(obj));
-}
+};
+
+Utils.splitId = (request) => {
+    const url = request.url.split('/')[2];
+    const id = url.split('?')[0];
+    return Promise.resolve(id);
+};
+
+Utils.splitValues = (body) => {
+    return Utils.splitForUpdate(body)
+    .then((obj) => {
+        const newobj = JSON.parse(obj)
+        const arr = [newobj];
+        return Promise.resolve(JSON.stringify(arr))
+    });
+};

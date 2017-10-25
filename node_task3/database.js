@@ -63,6 +63,7 @@ Database.deleteTweet = (urlId) => {
 };
 
 Database.updateTweets = (urlId,body) => {
+    console.log('update',body);
     return Database.read('tweets.json')
     .then((data) => {
         let parsedBody = JSON.parse(body);

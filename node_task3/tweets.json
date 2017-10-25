@@ -1,19 +1,19 @@
 {
 	"tweets": [
 		{
-			"tweet": "i am dfbdf",
-			"user": "John",
-			"id": "7592"
+			"user": "Mary",
+			"tweet": "byeee",
+			"id": "887"
 		},
 		{
-			"tweet": "i am finwegwge",
-			"user": "Jack",
-			"id": "8879"
+			"user": "Jonny",
+			"tweet": "lknef wefj kwef",
+			"id": "4595"
 		},
 		{
-			"user": "Sam",
-			"tweet": "hiii",
-			"id": "2639"
+			"user": "cvgcbv",
+			"tweet": "gcg",
+			"id": "1854"
 		}
 	]
 }
