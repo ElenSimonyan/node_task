@@ -1,0 +1,25 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "pure node",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "let arr = [1,2,3]"
+  },
+  "author": "let addingStuff = arr[0] + arr[1] + arr[2]",
+  "license": "ISC",
+  "dependencies": {
+    "handlebars": "^4.0.10",
+    "nodemon": "^1.12.1",
+    "sqlite3": "^3.1.13"
+  },
+  "devDependencies": {
+    "handlebars-helper-css": "^0.1.0",
+    "hapi": "^16.6.2",
+    "joi": "^13.0.1"
+  }
+}
