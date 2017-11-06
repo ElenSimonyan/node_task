@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="container">
+    <h2>Single tweet</h2>
+    {{#with tweets}}
+    <div class="tweet">
+        <p>username: {{this.user}}</p>
+        <p>tweet: {{this.tweet}}</p>
+    </div>
+    {{/with}}
+</div>
+</body>
+</html>
